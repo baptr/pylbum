@@ -14,5 +14,5 @@ def GetConfig():
         os.makedirs(GetDataDir())
 
     config = wx.FileConfig(
-            localFilename=os.path.join(GetDataDir(), "APP_NAME.conf"))
+            localFilename=os.path.join(GetDataDir(), "pylbum.conf"))
     return config

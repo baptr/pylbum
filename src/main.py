@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import wx
 import mainPage
 import releasePage
@@ -30,13 +32,13 @@ class MainWindow(wx.Frame):
         """ Create the menu items """
         # File menu
         filemenu = wx.Menu()
-        filemenu.Append( ID_QUIT, "&Quit", "Quit APP_NAME" )
+        filemenu.Append( ID_QUIT, "&Quit", "Quit pylbum" )
         wx.EVT_MENU( self, ID_QUIT, self.OnQuit )
 
         # Help menu
         helpmenu = wx.Menu()
-        helpmenu.Append( ID_ABOUT, "&About APP_NAME",
-                "Information about APP_NAME" )
+        helpmenu.Append( ID_ABOUT, "&About pylbum",
+                "Information about pylbum" )
         wx.EVT_MENU( self, ID_ABOUT, self.OnAbout )
 
         # View menu
@@ -83,13 +85,13 @@ class MainWindow(wx.Frame):
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.SetAppName("APP_NAME")
+        self.SetAppName("pylbum")
 
         return True
 
 def main():
     app = MyApp(False)
-    frame = MainWindow( None, wx.ID_ANY, "APP_NAME" )
+    frame = MainWindow( None, wx.ID_ANY, "pylbum" )
     frame.Show( True )
     app.MainLoop()
 
