@@ -38,7 +38,7 @@ class ReleasePage( wx.Panel ):
                 style = wx.CLIP_CHILDREN )
         self.searchItems = {}
         
-        self.artistList = wx.ListCtrl( self, wx.ID_ANY, wx.DefaultPosition,
+        self.artistList = wx.ListCtrl( leftPanel, wx.ID_ANY, wx.DefaultPosition,
                                        wx.DefaultSize,  
                                        wx.LC_REPORT|wx.LC_SINGLE_SEL )
         self.artistList.Bind( wx.EVT_LIST_COL_END_DRAG, self.OnArtistColDrag,

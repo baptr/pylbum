@@ -63,8 +63,8 @@ class MainWindow(wx.Frame):
         mainP = mainPage.MainPage( nb, -1, FRAME_WIDTH )
         releaseP = releasePage.ReleasePage( nb, -1, FRAME_WIDTH )
         releaseP.InitSize()
-        similarP = similarPage.SimilarPage( nb, -1 )
-        lyricP = lyricPage.LyricPage( nb, -1 )
+        #similarP = similarPage.SimilarPage( nb, -1 )
+        #lyricP = lyricPage.LyricPage( nb, -1 )
         
         # Add the pages
         nb.AddPage( mainP, "Main" )
