@@ -168,14 +168,16 @@ class ReleasePage( wx.Panel ):
                         print "Bad filename: " + release
                         continue
                     if os.path.isdir(releaseDir):
-                        listItem = self.artistList.GetItem( 
-                                self.artistList.GetFirstSelected(),
-                                0 )
-                        if( listItem.GetText() == name):
-                            self.releases.InsertStringItem( index, release )
-                            self.releases.SetStringItem( index, 1,
-                                    '12/12/2009' )
-                            index += 1
+                        sel = self.artistList.GetFirstSelected()
+                        if -1 != sel :
+                            listItem = self.artistList.GetItem( 
+                                    self.artistList.GetFirstSelected(),
+                                    0 )
+                            if( listItem.GetText() == name):
+                                self.releases.InsertStringItem( index, release )
+                                self.releases.SetStringItem( index, 1,
+                                        '12/12/2009' )
+                                index += 1
 
 
 
