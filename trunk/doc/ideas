@@ -1,0 +1,30 @@
+Main:
+
+A program to notify you of new album releases for each artist you have in a 
+music directory.
+
+Display options:
+    Be able to display every cd, and its release. 
+    Be able to set colors based on genre / artist. 
+    Be able to mark things as hidden with a toggle hidden button
+    Be able to star releases
+    Show / hide certain genres. 
+    Show/hide missing cds / aquired cds
+    Calendar
+    List (week / month / year)
+    Most recent releases
+ 
+Side:
+    similar artists
+        top 10 overall
+        related by artist
+        related by genre
+    Pull in from last.fm
+    Rename / move files
+    lyrics
+    cover art
+    missing songs
+
+Issues:
+
+    Can MusicBrainz get upcoming releases?     
