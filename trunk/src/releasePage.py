@@ -162,7 +162,11 @@ class ReleasePage( wx.Panel ):
                 albums = os.listdir( os.path.join(
                     config.Read('MusicDirectory'), name))
                 for release in albums:
-                    releaseDir = os.path.join(artistDir, release)
+                    try:
+                        releaseDir = os.path.join(artistDir, release)
+                    except UnicodeDecodeError:
+                        print "Bad filename: " + release
+                        continue
                     if os.path.isdir(releaseDir):
                         listItem = self.artistList.GetItem( 
                                 self.artistList.GetFirstSelected(),
