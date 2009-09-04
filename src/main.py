@@ -60,15 +60,15 @@ class MainWindow(wx.Frame):
         nb = wx.Notebook( self, -1 )
 
         # Create the pages
-        mainP = mainPage.MainPage( nb, -1, FRAME_WIDTH )
-        releaseP = releasePage.ReleasePage( nb, -1, FRAME_WIDTH )
-        releaseP.InitSize()
+        self.mainP = mainPage.MainPage( nb, -1, FRAME_WIDTH )
+        self.releaseP = releasePage.ReleasePage( nb, -1, FRAME_WIDTH )
+        self.releaseP.InitSize()
         #similarP = similarPage.SimilarPage( nb, -1 )
         #lyricP = lyricPage.LyricPage( nb, -1 )
         
         # Add the pages
-        nb.AddPage( mainP, "Main" )
-        nb.AddPage( releaseP, "Releases" )
+        nb.AddPage( self.mainP, "Main" )
+        nb.AddPage( self.releaseP, "Releases" )
         #nb.AddPage( similarP, "Similar" )
         #nb.AddPage( lyricP, "Lyrics" )
 
@@ -79,9 +79,8 @@ class MainWindow(wx.Frame):
         x = 1
 
     def OnPreferences( self, e ):
-        frame = optionWindow.OptionWindow( None, wx.ID_ANY, "Preferences" )
+        frame = optionWindow.OptionWindow( None, wx.ID_ANY, "Preferences", self )
         frame.Show( True )
-        print "options shown"
 
 class MyApp(wx.App):
     def OnInit(self):

@@ -13,7 +13,7 @@ ID_DIR = 102
 
 class OptionWindow(wx.Frame):
 
-    def __init__(self, parent, id, title):
+    def __init__(self, parent, id, title, main):
         wx.Frame.__init__(self, parent, id, title,
                 size=(FRAME_WIDTH, FRAME_HEIGHT))
        
@@ -21,6 +21,8 @@ class OptionWindow(wx.Frame):
         nb = wx.Notebook( self, wx.ID_ANY, style=wx.BK_LEFT|wx.BORDER_DOUBLE )
 
         config = utils.GetConfig()
+
+        self.MainWindow = main
 
         # Make the main configuration tab
         main = wx.Panel( nb, wx.ID_ANY )
@@ -93,6 +95,8 @@ class OptionWindow(wx.Frame):
         config.Write('MusicDirectory', self.directoryInput.GetValue())
 
         config.Flush()
+        self.MainWindow.releaseP.musicDir = self.directoryInput.GetValue()
+        self.MainWindow.releaseP.RecreateArtists()
         self.Close()
 
     def OnCancel( self, event ):
