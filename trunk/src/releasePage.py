@@ -1,4 +1,4 @@
-import wx, wx.aui
+import wx, wx.aui, wx.lib.hyperlink
 import os
 import utils
 
@@ -79,11 +79,13 @@ class ReleasePage( wx.Panel ):
 
         # Create static text placeholder
         bottomPanel = wx.Panel( self.tbSplitter, style=wx.CLIP_CHILDREN )
-        self.placeholder = wx.StaticText( bottomPanel, wx.ID_ANY, 
-            "\n\n Placeholder \n\n" )
+        #self.placeholder = wx.StaticText( bottomPanel, wx.ID_ANY, 
+            #"\n\n Placeholder \n\n" )
+        self.link = wx.lib.hyperlink.HyperLinkCtrl( parent=bottomPanel )
 
         bottomBox = wx.BoxSizer( wx.VERTICAL )
-        bottomBox.Add( self.placeholder, 1, wx.EXPAND )
+        #bottomBox.Add( self.placeholder, 1, wx.EXPAND )
+        bottomBox.Add( self.link, 1, wx.EXPAND )
         bottomPanel.SetSizer( bottomBox )
         bottomPanel.SetAutoLayout( True )
 
@@ -138,7 +140,7 @@ class ReleasePage( wx.Panel ):
         self.artistList.SetColumnWidth( 0, self.artistWidth )
 
         index = 0
-        for junk,artist in self.main.library.artists.items() :
+        for junk,artist in sorted( self.main.library.artists.items() ):
             self.artistList.InsertStringItem( index, artist['name'] )
             index+=1
 
@@ -156,6 +158,10 @@ class ReleasePage( wx.Panel ):
             index = 0
             for junk,artist in self.main.library.artists.items() :
                 if( artist['name'] == event.GetItem().GetText() ) :
+                    self.link.SetURL( str(artist['aid']) )
+                    self.link.SetLabel( artist['name'] )
+                    self.link.SetToolTipString( str(artist['aid']) )
+                    self.link.SetVisited(False)
                     for rel in artist['releases']:
                         self.releases.InsertStringItem( index, rel.title )
                         self.releases.SetStringItem( index, 1, rel.have and "Y" or "N" )
