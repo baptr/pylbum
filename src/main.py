@@ -6,6 +6,7 @@ import releasePage
 import lyricPage
 import similarPage
 import optionWindow
+import library
 
 # File menu 11**
 ID_QUIT = 1101
@@ -23,6 +24,10 @@ class MainWindow(wx.Frame):
     def __init__(self, parent, id, title):
         wx.Frame.__init__(self, parent, id, title, 
                 size=(FRAME_WIDTH, FRAME_HEIGHT))
+
+        self.library = library.Library()
+        self.library.PopulateLibrary()
+
         self.CreateStatusBar()
         self.CreateMenu()
         self.CreateNotebook()
@@ -61,7 +66,7 @@ class MainWindow(wx.Frame):
 
         # Create the pages
         self.mainP = mainPage.MainPage( nb, -1, FRAME_WIDTH )
-        self.releaseP = releasePage.ReleasePage( nb, -1, FRAME_WIDTH )
+        self.releaseP = releasePage.ReleasePage( nb, -1, FRAME_WIDTH, self )
         self.releaseP.InitSize()
         #similarP = similarPage.SimilarPage( nb, -1 )
         #lyricP = lyricPage.LyricPage( nb, -1 )

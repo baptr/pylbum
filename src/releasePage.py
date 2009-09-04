@@ -13,10 +13,15 @@ ALLOW_AUI_FLOATING = False
 LEFT_WIDTH = 160
 
 class ReleasePage( wx.Panel ):
-    def __init__( self, parent, id, width ):
+    def __init__( self, parent, id, width, main ):
 
         wx.Panel.__init__( self, parent, id )
 
+        self.main = main
+
+        self.__uiInit( parent,id,width )
+
+    def __uiInit( self, parent, id, width ):
         self.artistWidth = LEFT_WIDTH
         self.leftWidth = LEFT_WIDTH
         self.rightWidth = width - LEFT_WIDTH
@@ -117,14 +122,14 @@ class ReleasePage( wx.Panel ):
         self.OnSearch()
         self.RecreateReleases()
 
-    def OnSearch( self ):
+    def OnSearch( self, item=None ):
         self.RecreateArtists()
 
-    def OnSearchMenu( self ):
+    def OnSearchMenu( self, item ):
         x = 1
 
     def OnItemSelected( self, event ):
-        self.RecreateReleases()
+        self.RecreateReleases( event )
 
     def RecreateArtists( self, event=None ):
         self.artistList.DeleteAllColumns()
@@ -132,52 +137,54 @@ class ReleasePage( wx.Panel ):
         self.artistList.InsertColumn( 0, "Artist" )
         self.artistList.SetColumnWidth( 0, self.artistWidth )
 
-        config = utils.GetConfig()
-        artists = os.listdir( config.Read('MusicDirectory' ) )
-
         index = 0
-        for name in artists:
-            if (( self.artistList.FindItem( -1, name, True ) == -1 ) and 
-                ( name.lower().find( self.filter.GetValue().lower()) > -1 ) and
-                ( os.path.isdir(os.path.join(config.Read('MusicDirectory'), 
-                    name)))):
-                self.artistList.InsertStringItem( index, name )
-                index += 1
+        for junk,artist in self.main.library.artists.items() :
+            self.artistList.InsertStringItem( index, artist['name'] )
+            index+=1
 
-    def RecreateReleases( self ):
+    def RecreateReleases( self, event=None ):
         self.releases.DeleteAllColumns()
         self.releases.DeleteAllItems()
         self.releases.InsertColumn( 0, "Release" )
-        self.releases.InsertColumn( 1, "Date" )
+        self.releases.InsertColumn( 1, "Have" )
+        self.releases.InsertColumn( 2, "Date" )
         self.releases.SetColumnWidth( 0, self.rightWidth * .75 )
-        self.releases.SetColumnWidth( 1, self.rightWidth * .25 )
+        self.releases.SetColumnWidth( 1, self.rightWidth * .05 )
+        self.releases.SetColumnWidth( 2, self.rightWidth * .20 )
 
+        if event:
+            index = 0
+            for junk,artist in self.main.library.artists.items() :
+                if( artist['name'] == event.GetItem().GetText() ) :
+                    for rel in artist['releases']:
+                        self.releases.InsertStringItem( index, rel.title )
+                        self.releases.SetStringItem( index, 1, rel.have and "Y" or "N" )
+                        self.releases.SetStringItem( index, 2, rel.date )
+                        index += 1
+        
 
-        index = 0
-        config = utils.GetConfig()
-        artists = os.listdir(config.Read('MusicDirectory'))
-        for name in artists:
-            artistDir = os.path.join(config.Read('MusicDirectory'), name)
-            if os.path.isdir( artistDir ):
-                albums = os.listdir( os.path.join(
-                    config.Read('MusicDirectory'), name))
-                for release in albums:
-                    try:
-                        releaseDir = os.path.join(artistDir, release)
-                    except UnicodeDecodeError:
-                        print "Bad filename: " + release
-                        continue
-                    if os.path.isdir(releaseDir):
-                        sel = self.artistList.GetFirstSelected()
-                        if -1 != sel :
-                            listItem = self.artistList.GetItem( 
-                                    self.artistList.GetFirstSelected(),
-                                    0 )
-                            if( listItem.GetText() == name):
-                                self.releases.InsertStringItem( index, release )
-                                self.releases.SetStringItem( index, 1,
-                                        '12/12/2009' )
-                                index += 1
+        if 0:
+            index = 0
+            artists = os.listdir(self.musicDir)
+            for name in artists:
+                artistDir = os.path.join(self.musicDir, name)
+                if os.path.isdir( artistDir ):
+                    albums = os.listdir(artistDir)
+                    for release in albums:
+                        try:
+                            releaseDir = os.path.join(artistDir, release)
+                        except UnicodeDecodeError:
+                            print "Bad filename: " + release
+                            continue
+                        if os.path.isdir(releaseDir):
+                            sel = self.artistList.GetFirstSelected()
+                            if -1 != sel :
+                                listItem = self.artistList.GetItem( sel, 0 )
+                                if( listItem.GetText() == name):
+                                    self.releases.InsertStringItem( index, release )
+                                    self.releases.SetStringItem( index, 1,
+                                            '12/12/2009' )
+                                    index += 1
 
 
 

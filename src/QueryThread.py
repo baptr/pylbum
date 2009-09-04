@@ -1,15 +1,32 @@
 import threading, time
 import sys
+import Queue
 import musicbrainz2.model as model
 from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, ArtistIncludes
 
+debug = False
+
 class QueryThread ( threading.Thread ):
 
-    def run ( self ):
-        id = self.getArtistId( sys.argv[1] )
-        self.getReleases( id )
+    def __init__( self, library ):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.queue = Queue.PriorityQueue()
+        self.lib = library
 
-    def getArtistId( self, artistName ):
+    def run ( self ):
+        while True:
+            pri,query,data,callback = self.queue.get(True)
+            query( data, callback )
+            time.sleep(1.01)
+
+    def lookupAId( self, aKey, cbk, pri=10 ):
+        self.queue.put( (pri, self.getArtistId, aKey, cbk) )
+
+    def lookupReleases( self, aKey, cbk, pri=12 ):
+        self.queue.put( (pri, self.getReleases, aKey, cbk) )
+
+    def getArtistId( self, artistName, cbk ):
 
         q = Query()
         
@@ -23,17 +40,22 @@ class QueryThread ( threading.Thread ):
             print 'Error:', e
             sys.exit(1)
 
-        artist = artistResults[0].artist
+        if len(artistResults) > 0 :
+            artist = artistResults[0].artist
 
-        ###### DEBUG #######
-        if debug:
-            print artist.name, ' => ', artist.id
+            ###### DEBUG #######
+            if debug:
+                print artist.name, ' => ', artist.id
 
-        #### END DEBUG #####
-        time.sleep(1.01)
-        return artist.id
+            #### END DEBUG #####
+            cbk( artist.id )
 
-    def getReleases( self, id ):
+    def getReleases( self, aKey, cbk ):
+
+        id = self.lib.artists[aKey]['aid']
+        if id == 0: # Don't have an aId yet
+            print "Tried to look up ", id, " releases without an id"
+            return;
 
         q = Query()
 
@@ -64,11 +86,18 @@ class QueryThread ( threading.Thread ):
                     print "Title: ", release.title
         #####    END DEBUG  #######
 
-        time.sleep(1.01)
-        return artist.getReleases()
+        cbk( artist.getReleases() )
         
-        
-    
-        
-debug = False
-QueryThread().start()
+if 0:
+    def myPrint( releases ):
+        for r in releases:
+            print "Title: ", r.title
+
+    def findReleases( aId ):
+        qt.queue.put( (qt.getReleases,aId,myPrint) )
+
+    debug = False
+    qt = QueryThread()
+    qt.start()
+    qt.queue.put( (qt.getArtistId,"Tool",findReleases) )
+    time.sleep(2)
