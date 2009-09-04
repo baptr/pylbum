@@ -26,7 +26,7 @@ class MainWindow(wx.Frame):
                 size=(FRAME_WIDTH, FRAME_HEIGHT))
 
         self.library = library.Library()
-        self.library.PopulateLibrary()
+        self.library.Populate()
 
         self.CreateStatusBar()
         self.CreateMenu()

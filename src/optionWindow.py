@@ -95,7 +95,8 @@ class OptionWindow(wx.Frame):
         config.Write('MusicDirectory', self.directoryInput.GetValue())
 
         config.Flush()
-        self.MainWindow.releaseP.musicDir = self.directoryInput.GetValue()
+        self.MainWindow.library.musicDir = self.directoryInput.GetValue()
+        self.MainWindow.library.Populate()
         self.MainWindow.releaseP.RecreateArtists()
         self.Close()
 
