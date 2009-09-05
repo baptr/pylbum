@@ -24,7 +24,7 @@ class ReleasePage( wx.Panel ):
     def __uiInit( self, parent, id, width ):
         self.artistWidth = LEFT_WIDTH
         self.leftWidth = LEFT_WIDTH
-        self.rightWidth = width - LEFT_WIDTH
+        self.rightWidth = width - LEFT_WIDTH - 7
         self.sizer = wx.BoxSizer( wx.VERTICAL )
 
         self.lrSplitter = wx.SplitterWindow( self, wx.ID_ANY,
@@ -141,8 +141,9 @@ class ReleasePage( wx.Panel ):
 
         index = 0
         for junk,artist in sorted( self.main.library.artists.items() ):
-            self.artistList.InsertStringItem( index, artist['name'] )
-            index+=1
+            if( artist['name'].lower().find( self.filter.GetValue().lower() ) > -1 ):
+                self.artistList.InsertStringItem( index, artist['name'] )
+                index+=1
 
     def RecreateReleases( self, event=None ):
         self.releases.DeleteAllColumns()
@@ -150,9 +151,9 @@ class ReleasePage( wx.Panel ):
         self.releases.InsertColumn( 0, "Release" )
         self.releases.InsertColumn( 1, "Have" )
         self.releases.InsertColumn( 2, "Date" )
-        self.releases.SetColumnWidth( 0, self.rightWidth * .75 )
-        self.releases.SetColumnWidth( 1, self.rightWidth * .05 )
-        self.releases.SetColumnWidth( 2, self.rightWidth * .20 )
+        self.releases.SetColumnWidth( 0, self.rightWidth * .70 )
+        self.releases.SetColumnWidth( 1, self.rightWidth * .09 )
+        self.releases.SetColumnWidth( 2, self.rightWidth * .21 )
 
         if event:
             index = 0
@@ -167,32 +168,6 @@ class ReleasePage( wx.Panel ):
                         self.releases.SetStringItem( index, 1, rel.have and "Y" or "N" )
                         self.releases.SetStringItem( index, 2, rel.date )
                         index += 1
-        
-
-        if 0:
-            index = 0
-            artists = os.listdir(self.musicDir)
-            for name in artists:
-                artistDir = os.path.join(self.musicDir, name)
-                if os.path.isdir( artistDir ):
-                    albums = os.listdir(artistDir)
-                    for release in albums:
-                        try:
-                            releaseDir = os.path.join(artistDir, release)
-                        except UnicodeDecodeError:
-                            print "Bad filename: " + release
-                            continue
-                        if os.path.isdir(releaseDir):
-                            sel = self.artistList.GetFirstSelected()
-                            if -1 != sel :
-                                listItem = self.artistList.GetItem( sel, 0 )
-                                if( listItem.GetText() == name):
-                                    self.releases.InsertStringItem( index, release )
-                                    self.releases.SetStringItem( index, 1,
-                                            '12/12/2009' )
-                                    index += 1
-
-
 
     def InitSize( self ):
         self.lrSplitter.SetSashPosition( LEFT_WIDTH )

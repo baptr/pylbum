@@ -2,7 +2,7 @@ import threading, time
 import sys
 import Queue
 import musicbrainz2.model as model
-from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, ArtistIncludes
+from musicbrainz2.webservice import Query, WebServiceError, ReleaseFilter
 
 debug = False
 
@@ -18,7 +18,7 @@ class QueryThread ( threading.Thread ):
         while True:
             pri,query,data,callback = self.queue.get(True)
             query( data, callback )
-            time.sleep(1.01)
+            time.sleep(1.11)
 
     def lookupAId( self, aKey, cbk, pri=10 ):
         self.queue.put( (pri, self.getArtistId, aKey, cbk) )
@@ -43,6 +43,7 @@ class QueryThread ( threading.Thread ):
         if len(artistResults) > 0 :
             artist = artistResults[0].artist
 
+            print artist.getReleases()
             ###### DEBUG #######
             if debug:
                 print artist.name, ' => ', artist.id
@@ -52,10 +53,11 @@ class QueryThread ( threading.Thread ):
 
     def getReleases( self, aKey, cbk ):
 
-        id = self.lib.artists[aKey]['aid']
-        if id == 0: # Don't have an aId yet
-            print "Tried to look up ", id, " releases without an id"
-            return;
+        if 0:
+            id = self.lib.artists[aKey]['aid']
+            if id == 0: # Don't have an aId yet
+                print "Tried to look up ", id, " releases without an id"
+                return;
 
         q = Query()
 
@@ -67,26 +69,45 @@ class QueryThread ( threading.Thread ):
             # TODO: The types searched for should be an option somewhere,
             # and tags should be incorporated somehow
             # For now I will only search for Official releases, and Albums
-            inc = ArtistIncludes(
-                releases = (model.Release.TYPE_OFFICIAL,
-                            model.Release.TYPE_ALBUM),
-                tags=False)
-            artist = q.getArtistById( id, inc )
+            if 0:
+                inc = ArtistIncludes(
+                    releases = (model.Release.TYPE_OFFICIAL,
+                                model.Release.TYPE_ALBUM),
+                    tags=False)
+                artist = q.getArtistById( id, inc )
+            filt = ReleaseFilter(
+                    releaseTypes = (model.Release.TYPE_OFFICIAL,
+                                    model.Release.TYPE_ALBUM),
+                    artistName = aKey )
+            releases = q.getReleases( filt )
         except WebServiceError, e:
             print 'Error:', e
             sys.exit(1)
 
         ###### DEBUG ######
         if debug:
-            if len(artist.getReleases()) == 0:
-                print "No releases found for ", artist.name
-                print
-            else:
-                for release in artist.getReleases():
-                    print "Title: ", release.title
+            if 0:
+                if len(artist.getReleases()) == 0:
+                    print "No releases found for ", artist.name
+                    print
+                else:
+                    for release in artist.getReleases():
+                        print "Title: ", release.title
         #####    END DEBUG  #######
 
-        cbk( artist.getReleases() )
+        relList = []
+        for xRelease in releases:
+            release = xRelease.getRelease()
+            if release.isSingleArtistRelease():
+                found=False
+                for rel in relList:
+                    if release.title == rel.title:
+                        found = True
+                        break
+                if not found:
+                    relList.append( release )
+
+        cbk( relList )
         
 if 0:
     def myPrint( releases ):

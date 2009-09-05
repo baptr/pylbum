@@ -7,15 +7,17 @@ import lyricPage
 import similarPage
 import optionWindow
 import library
+from statusUpdate import *
 
 # File menu 11**
-ID_QUIT = 1101
+ID_QUIT = wx.NewId()
 
 # View menu 12**
-ID_PREFERENCES = 1201
+ID_PREFERENCES = wx.NewId()
 
 # Help menu 13**
-ID_ABOUT = 1301
+ID_ABOUT = wx.NewId()
+
 
 FRAME_WIDTH=640
 FRAME_HEIGHT=480
@@ -25,13 +27,19 @@ class MainWindow(wx.Frame):
         wx.Frame.__init__(self, parent, id, title, 
                 size=(FRAME_WIDTH, FRAME_HEIGHT))
 
-        self.library = library.Library()
+        self.library = library.Library( self )
         self.library.Populate()
 
         self.CreateStatusBar()
         self.CreateMenu()
         self.CreateNotebook()
 
+    def updateStatus( self, event ):
+        self.GetStatusBar().SetStatusText( event.msg )
+
+    def CreateStatusBar( self ):
+        wx.Frame.CreateStatusBar( self )
+        EVT_STATUS_UPDATE(self, self.updateStatus)
 
     def CreateMenu( self ):
         """ Create the menu items """
