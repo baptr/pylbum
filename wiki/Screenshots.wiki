@@ -3,4 +3,8 @@
 
 = Introduction =
 
-Screenshots to come!
+More screenshots to come!
+
+Release Page (r12)
+
+http://pylbum.googlecode.com/svn/trunk/wiki_inc/release_page.r12.png
