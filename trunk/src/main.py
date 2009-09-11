@@ -80,8 +80,8 @@ class MainWindow(wx.Frame):
         #lyricP = lyricPage.LyricPage( nb, -1 )
         
         # Add the pages
-        nb.AddPage( self.mainP, "Main" )
         nb.AddPage( self.releaseP, "Releases" )
+        nb.AddPage( self.mainP, "Main" )
         #nb.AddPage( similarP, "Similar" )
         #nb.AddPage( lyricP, "Lyrics" )
 
