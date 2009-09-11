@@ -82,10 +82,12 @@ class ReleasePage( wx.Panel ):
         #self.placeholder = wx.StaticText( bottomPanel, wx.ID_ANY, 
             #"\n\n Placeholder \n\n" )
         self.link = wx.lib.hyperlink.HyperLinkCtrl( parent=bottomPanel )
+        self.whatLink = wx.lib.hyperlink.HyperLinkCtrl( parent=bottomPanel )
 
         bottomBox = wx.BoxSizer( wx.VERTICAL )
         #bottomBox.Add( self.placeholder, 1, wx.EXPAND )
         bottomBox.Add( self.link, 1, wx.EXPAND )
+        bottomBox.Add( self.whatLink, 1, wx.EXPAND )
         bottomPanel.SetSizer( bottomBox )
         bottomPanel.SetAutoLayout( True )
 
@@ -163,6 +165,11 @@ class ReleasePage( wx.Panel ):
                     self.link.SetLabel( artist['name'] )
                     self.link.SetToolTipString( str(artist['aid']) )
                     self.link.SetVisited(False)
+                    whatURL = "http://what.cd/artist.php?name=" + str(artist['name'])
+                    self.whatLink.SetURL( str(whatURL) )
+                    self.whatLink.SetLabel('Search on What.CD' )
+                    self.whatLink.SetToolTipString( str(whatURL) )
+                    self.whatLink.SetVisited(False)
                     for rel in artist['releases']:
                         self.releases.InsertStringItem( index, rel.title )
                         self.releases.SetStringItem( index, 1, rel.have and "Y" or "N" )
