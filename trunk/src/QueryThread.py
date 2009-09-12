@@ -17,13 +17,16 @@ class QueryThread ( threading.Thread ):
     def run ( self ):
         while True:
             pri,query,data,callback = self.queue.get(True)
-            query( data, callback )
-            time.sleep(1.11)
+            if( query( data, callback ) ):
+                time.sleep(1.11)
 
     def lookupReleases( self, aKey, cbk, pri=12 ):
         self.queue.put( (pri, self.getReleases, aKey, cbk) )
 
     def getReleases( self, aKey, cbk ):
+
+        if( self.lib.artists[aKey]['queried'] ) :
+            return False
 
         q = Query()
 
@@ -57,3 +60,20 @@ class QueryThread ( threading.Thread ):
                     relList.append( release )
 
         cbk( relList )
+
+        self.lib.artists[aKey]['queried'] = True
+        return True
+        
+if 0:
+    def myPrint( releases ):
+        for r in releases:
+            print "Title: ", r.title
+
+    def findReleases( aId ):
+        qt.queue.put( (qt.getReleases,aId,myPrint) )
+
+    debug = False
+    qt = QueryThread()
+    qt.start()
+    qt.queue.put( (qt.getArtistId,"Tool",findReleases) )
+    time.sleep(2)
