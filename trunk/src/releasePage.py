@@ -170,6 +170,9 @@ class ReleasePage( wx.Panel ):
                     self.whatLink.SetLabel('Search on What.CD' )
                     self.whatLink.SetToolTipString( str(whatURL) )
                     self.whatLink.SetVisited(False)
+                    if( artist['aid'] == 0 ):
+                        # queue a high priority lookup of this artist
+                        self.main.library.lookupReleases( junk, 6 )
                     for rel in artist['releases']:
                         self.releases.InsertStringItem( index, rel.title )
                         self.releases.SetStringItem( index, 1, rel.have and "Y" or "N" )
