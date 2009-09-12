@@ -67,7 +67,8 @@ class Library:
                 self.artists[aKey] = {
                         'aid':0,
                         'name':name,
-                        'releases': []
+                        'releases': [],
+                        'queried':False
                         }
                 albums = os.listdir(artistDir)
                 for release in albums:
