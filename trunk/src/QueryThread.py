@@ -17,8 +17,14 @@ class QueryThread ( threading.Thread ):
     def run ( self ):
         while True:
             pri,query,data,callback = self.queue.get(True)
-            if( query( data, callback ) ):
-                time.sleep(1.11)
+            try:
+                if( query( data, callback ) ):
+                    time.sleep(1.41)
+            except WebServiceError, e:
+                if( e.msg.find("Service Temporarily Unavailable") >= 0 ):
+                    time.sleep(4)
+                else:
+                    raise e
 
     def lookupReleases( self, aKey, cbk, pri=12 ):
         self.queue.put( (pri, self.getReleases, aKey, cbk) )
@@ -45,7 +51,7 @@ class QueryThread ( threading.Thread ):
             releases = q.getReleases( filt )
         except WebServiceError, e:
             print 'Error:', e
-            sys.exit(1)
+            raise e
 
         relList = []
         for xRelease in releases:

@@ -1,4 +1,5 @@
 import wx
+from datetime import datetime, timedelta
 
 RELEASE_ARTIST_WIDTH=150
 RELEASE_RELEASE_WIDTH=100
@@ -8,8 +9,9 @@ RELEASE_FONT_SIZE=8
 RELATED_ARTIST_WIDTH=150
 
 class MainPage( wx.Panel ):
-    def __init__( self, parent, id, width ):
+    def __init__( self, parent, id, width, main ):
         wx.Panel.__init__( self, parent, id )
+        self.library = main.library;
         self.sizer = wx.BoxSizer( wx.VERTICAL )
         st = wx.StaticText( self, wx.ID_ANY, "\nNew Releases:" )
         self.sizer.Add( st )
@@ -30,8 +32,6 @@ class MainPage( wx.Panel ):
         self.PopulateRelated( self.relatedList, width )
         relatedSizer.Add( self.relatedList, 1, wx.EXPAND )
         self.sizer.Add( relatedSizer, 1, wx.EXPAND )
-        
-        
 
     def PopulateRelated( self, list, width ):
         """
@@ -49,32 +49,47 @@ class MainPage( wx.Panel ):
         releaseSizer = wx.BoxSizer( wx.HORIZONTAL )
         self.newReleases = wx.ListCtrl( self, wx.ID_ANY, wx.DefaultPosition,
                                         wx.DefaultSize,  wx.LC_REPORT )
-        self.PopulateReleases( self.newReleases, width )
+        self.PopulateReleases()
         releaseSizer.Add( self.newReleases, 1, wx.EXPAND )
         self.sizer.Add( releaseSizer, 1, wx.EXPAND )
-       
-    def PopulateReleases( self, releases, width ):
-        """
-        releases.InsertColumn( 0, "Artist" )
-        releases.InsertColumn( 1, "Release" )
-        releases.InsertColumn( 2, "Date" )
 
-        items = musicdata.items()
-        for key, data in items:
-            index = releases.InsertStringItem( key, data[0] )
-            releases.SetStringItem( index, 1, data[1] )
-            releases.SetStringItem( index, 2, data[2] )
-            if key % 2 == 0:
-                self.FormatItem( index, releases, fg=wx.BLUE,
-                        bg=wx.WHITE )
-            else:
-                self.FormatItem( index, releases )
-
+        self.newReleases.InsertColumn( 0, "Artist" )
+        self.newReleases.InsertColumn( 1, "Release" )
+        self.newReleases.InsertColumn( 2, "Date" )
         # Size the columns
-        releases.SetColumnWidth( 0, width * .4 )
-        releases.SetColumnWidth( 1, width * .4 )
-        releases.SetColumnWidth( 2, width * .2 )
-        """
+        self.newReleases.SetColumnWidth( 0, width * .4 )
+        self.newReleases.SetColumnWidth( 1, width * .4 )
+        self.newReleases.SetColumnWidth( 2, width * .2 )
+
+      
+    def PopulateReleases( self ):
+        """List recent releases across all artists in the library """
+        releases = self.newReleases
+        releases.DeleteAllItems()
+
+        print "Updating new releases"
+
+        items = sorted( self.library.artists.items() )
+        targetdate = datetime.today() - timedelta(30);
+        key = 1
+        for junk, artist in items:
+            for rel in artist['releases']:
+                if rel.have:
+                    continue
+                if rel.date != 'Unknown':
+                    try:
+                        relDate = datetime.strptime(rel.date,"%Y-%m-%d")
+                    except ValueError:
+                        continue
+                    if relDate < targetdate:
+                        continue
+                    index = releases.Append(
+                            (artist['name'], rel.title, rel.date) )
+                    key+=1
+                    if key % 2:
+                        self.FormatItem( index, releases, bg=wx.LIGHT_GREY )
+                    else:
+                        self.FormatItem( index, releases, bg=wx.WHITE )
 
     def FormatItem( self, itemNum, list, bg=wx.WHITE, fg=wx.BLACK, 
                     size=RELEASE_FONT_SIZE,family=wx.FONTFAMILY_DEFAULT, 
@@ -89,3 +104,4 @@ class MainPage( wx.Panel ):
     def OnResize( self, event ):
         if self.GetAutoLayout():
             self.Layout()
+        PopulateReleases( self.newReleases )
