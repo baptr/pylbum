@@ -14,6 +14,7 @@ ID_QUIT = wx.NewId()
 
 # View menu 12**
 ID_PREFERENCES = wx.NewId()
+ID_REFRESH = wx.NewId()
 
 # Help menu 13**
 ID_ABOUT = wx.NewId()
@@ -58,7 +59,10 @@ class MainWindow(wx.Frame):
         viewmenu = wx.Menu()
         viewmenu.Append( ID_PREFERENCES, "&Preferences",
                 "Edit your preferences and configuration" )
+        viewmenu.Append( ID_REFRESH, "&Refresh",
+                "Refresh the new releases pane" )
         wx.EVT_MENU( self, ID_PREFERENCES, self.OnPreferences )
+        wx.EVT_MENU( self, ID_REFRESH, self.OnRefresh )
 
         """ Create the menubar """
         menuBar = wx.MenuBar()
@@ -73,7 +77,7 @@ class MainWindow(wx.Frame):
         nb = wx.Notebook( self, -1 )
 
         # Create the pages
-        self.mainP = mainPage.MainPage( nb, -1, FRAME_WIDTH )
+        self.mainP = mainPage.MainPage( nb, -1, FRAME_WIDTH, self )
         self.releaseP = releasePage.ReleasePage( nb, -1, FRAME_WIDTH, self )
         self.releaseP.InitSize()
         #similarP = similarPage.SimilarPage( nb, -1 )
@@ -94,6 +98,9 @@ class MainWindow(wx.Frame):
     def OnPreferences( self, e ):
         frame = optionWindow.OptionWindow( None, wx.ID_ANY, "Preferences", self )
         frame.Show( True )
+
+    def OnRefresh( self, e ):
+        self.mainP.PopulateReleases()
 
 class MyApp(wx.App):
     def OnInit(self):
